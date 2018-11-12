@@ -8,11 +8,13 @@ de aplicaciones dentro de contenedores de software, proporcionando
 una capa adicional de abstracción y automatización de virtualización de
 aplicaciones en múltiples sistemas operativos.
 
-Docker es una especie de emulador de programas aislados.
+Docker es un “emulador” de entornos aislado para poder ejecutar programas sin que afecte a mi SS.OO. y pudiendose llevar y replicar en otros SS.OO. o entornos.
+Parecido a VirtualBox o VMWare, pero mucho más ligero.
+
 Docker consta de imágenes y contenedores.
-Una imagen es una parte mínima y suficiente del sistema operativo para
+Una **imagen** es una parte mínima y suficiente del sistema operativo para
 ejecutar programas.
-Un contenedor es un entorno aislado con la copia de una imagen la cual
+Un **contenedor** es un entorno aislado con la copia de una imagen la cual
 se puede configurar.
 
 # Instalación de Docker en ubuntu
@@ -27,27 +29,43 @@ sudo usermod -aG docker $USER
 3. En https://hub.docker.com/ podemos buscar imagenes de docker ya preparadas
 4. Podemos comprobar qué imágenes tenemos con:
 ```shell
-  sudo docker imagesComandos básicos de Docker
   docker images
-  docker container ls
-  docker pull IMAGEN  o  docker ps
+```
+# Comandos básicos de Docker
+Listado de imágenes de docker instaladas:
+```shell
+  docker images
+```
+Listado de contenedores de docker creados:
+```shell
+  docker container ls    o   docker ps
+```
+Para bajar una de imágen de docker del docker hub:
+```shell
+  docker pull IMAGEN
 ```
   
-# Comandos básicos de Docker
+# Mas comandos de Docker
 ```shell
-  docker build
+  docker build -t NOMBRE_CONTENEDOR .
   docker run IMAGEN
   docker inspect CONTENEDOR
   docker logs CONTENEDOR
   docker exec -it CONTENEDOR /bin/bash
   docker start / stop / restart CONTENEDOR
+  docker rm CONTENEDOR
+  docker rmi IMAGEN
 ```
 
 # Cómo crear un contenedor Docker
 1. Crear el directorio de trabajo
 2. Entrar en el directorio de trabajo
 3. Crear el fichero Dockerfile
-4. Ejecutar docker build
+4. Crear el contenedor: docker build
+5. Lanzar el contenedor creado: docker run
+6. Comprobar que está lanzado: docker ps
+7. Comprobar logs del contenedor: docker logs
+
 
 # Cómo crear un contenedor Docker
 ## Ejemplo:
@@ -76,20 +94,28 @@ sudo usermod -aG docker $USER
   docker ps -a
   docker rm [CONTENEDOR]
   docker ps -a
-  docker run -d --name "web" -p 80:80 -v $(pwd)/www:/usr/share/nginx/html nginx
-  docker ps
 ```
+En el comando de ejecución del contenedor tenemos un parámetro
+```shell
+  docker run -d --name "web" -p 80:80 -v $(pwd)/www:/usr/share/nginx/html nginx
+```
+Esto le dice al contenedor que tome la ruta *$(pwd)/www* y la enlace con la ruta donde nginx tiene lo que muestra */usr/share/nginx/html*
+
+Podemos comprobarlo:
 * Comprobamos http://localhost en un navegador
 * Modificamos index.html
 * Comprobamos http://localhost en un navegador
 
-# EJERCICIO
-Clonar un componente y hacer que se muestre la demo en nginx
+# EJERCICIOS
+1. Clonar un componente y hacer que se muestre la demo en un contenedor de nginx
+2. Arrancar tres contenedores de nginx en los puertos 80, 8080 y 8081
 
 # Haciendo más cosas con Docker
 
 ## ¿ Y si necesito crear un servidor express en node para exponer un api ?
-Vayamos por partes.
+Pues lo ideal es separar el servidor node-express del servidor de mongodb.
+De esta manera si necesito escalar o cambiar uno de los dos, el otro no tiene porqué verse afectado. Seguiremos los siguientes pasos:
+
 1. Vamos a crear un contenedor con node, express y mongodb.
 2. Vamos a crear un contenedor con un servidor de mongodb
 3. Vamos a conectar los dos contenedoresServidor con node, express y mongodb
