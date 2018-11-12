@@ -331,7 +331,9 @@ Ahora para que los cambios tengan efecto debemos parar todo, volver a construir 
   docker-compose ps
 ```
 
-Para poder probar el api debemos cargar con datos la base de datos llamada mibd y la colección de esa base de datos micoleccionProbamos los entry-point
+Para poder probar el api debemos cargar con datos la base de datos llamada mibd y la colección de esa base de datos micoleccion
+
+# Probamos los entry-point
 Mediante la consola de mongo creamos la base de datos:
 ```shell
   mongo
