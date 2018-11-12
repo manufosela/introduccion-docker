@@ -1,20 +1,18 @@
 # Introduccion a Docker
-tutorial introducción a docker y docker-compose creando un api node con mongo y creación de app fullstack de ejemplo
+tutorial introducción a docker y docker-compose creando un api con un contenedor node-express y otro con mongodb.
 
-# ¿Qué es docker?
+## ¿Qué es docker?
 
-Docker es un proyecto de código abierto que automatiza el despliegue
+Docker es un proyecto de código abierto que facilita la construción
 de aplicaciones dentro de contenedores de software, proporcionando
 una capa adicional de abstracción y automatización de virtualización de
 aplicaciones en múltiples sistemas operativos.
 
-Docker es un “emulador” de entornos aislado para poder ejecutar programas sin que afecte a mi SS.OO. y pudiendose llevar y replicar en otros SS.OO. o entornos.
-Parecido a VirtualBox o VMWare, pero mucho más ligero.
-
-Docker consta de imágenes y contenedores.
-Una **imagen** es una parte mínima y suficiente del sistema operativo para
-ejecutar programas.
-Un **contenedor** es un entorno aislado con la copia de una imagen la cual
+Docker es un “emulador” de entornos aislado para poder ejecutar programas sin que afecte a mi sistema operativo (SO) y pudiendose llevar y replicar en otros SS.OO. o entornos.
+Parecido a VirtualBox o VMWare, pero mucho más ligero y a nivel de sistema operativo. Básicamente no vas a tener más de un sistema operativo completo corriendo en tu máquina. ![virtualización vs contnedores](https://i.ytimg.com/vi/TvnZTi_gaNc/maxresdefault.jpg)
+Docker consta de imágenes y contenedores:
+1. Una **imagen** es la especificación inerte, inmmutable, una foto del estado y de unas piezas de software que incluyen desde la aplicación que queremos ejecutar hasta las librerias y todo lo necesario para que corra encima del sistema operativo en el cual se ejecuta.
+2. Un **contenedor** es un entorno aislado con la instanciación de una imagen, el cual
 se puede configurar.
 
 # Instalación de Docker en ubuntu
@@ -31,21 +29,27 @@ sudo usermod -aG docker $USER
 ```shell
   docker images
 ```
-# Comandos básicos de Docker
+# Comandos Docker
+## Básicos
 Listado de imágenes de docker instaladas:
 ```shell
   docker images
 ```
 Listado de contenedores de docker creados:
 ```shell
-  docker container ls    o   docker ps
+  docker container ls
 ```
+o su alias
+```shell
+  docker ps
+```
+
 Para bajar una de imágen de docker del docker hub:
 ```shell
   docker pull IMAGEN
 ```
-  
-# Mas comandos de Docker
+
+## Más comandos
 ```shell
   docker build -t NOMBRE_CONTENEDOR .
   docker run IMAGEN
@@ -57,18 +61,16 @@ Para bajar una de imágen de docker del docker hub:
   docker rmi IMAGEN
 ```
 
-# Cómo crear un contenedor Docker
+# Cómo crear y lanzar un contenedor Docker
 1. Crear el directorio de trabajo
 2. Entrar en el directorio de trabajo
 3. Crear el fichero Dockerfile
-4. Crear el contenedor: docker build
-5. Lanzar el contenedor creado: docker run
-6. Comprobar que está lanzado: docker ps
-7. Comprobar logs del contenedor: docker logs
+4. Crear el contenedor: `docker build`
+5. Lanzar el contenedor creado: `docker run`
+6. Comprobar que está lanzado: `docker ps`
+7. Comprobar logs del contenedor: `docker logs`
 
-
-# Cómo crear un contenedor Docker
-## Ejemplo:
+# Levantando un contenedor nginx:
 ```shell
   mkdir docker_example
   cd docker_example
@@ -80,7 +82,7 @@ Para bajar una de imágen de docker del docker hub:
   docker logs [CONTENEDOR]
   docker inspect [CONTENEDOR]
 ```
-# Pasando código local a un contenedor Docker
+# Montando una carpeta compartida entre un directorio local y un directorio dentro del contenedor Docker
 ## Ejemplo:
 ```shell
   mkdir www
@@ -99,26 +101,26 @@ En el comando de ejecución del contenedor tenemos un parámetro
 ```shell
   docker run -d --name "web" -p 80:80 -v $(pwd)/www:/usr/share/nginx/html nginx
 ```
-Esto le dice al contenedor que tome la ruta *$(pwd)/www* y la enlace con la ruta donde nginx tiene lo que muestra */usr/share/nginx/html*
+Esto crea un nuevo contenedor de la imagen nginx, llamado web, al que se le monta un volumen que enlaza desde la ruta local *$(pwd)/www* y a la ruta dentro del contenedor */usr/share/nginx/html* nginx que es la que utiliza este programa para servir, y además conectamos el puerto 80 de nuestra máquina con el puerto 80 del contenedor.
 
 Podemos comprobarlo:
 * Comprobamos http://localhost en un navegador
 * Modificamos index.html
 * Comprobamos http://localhost en un navegador
 
-# EJERCICIOS
+# Ejercicios
 1. Clonar un componente y hacer que se muestre la demo en un contenedor de nginx
 2. Arrancar tres contenedores de nginx en los puertos 80, 8080 y 8081
 
 # Haciendo más cosas con Docker
 
-## ¿ Y si necesito crear un servidor express en node para exponer un api ?
+## ¿Y si necesito crear un servidor express en node para exponer un api?
 Pues lo ideal es separar el servidor node-express del servidor de mongodb.
 De esta manera si necesito escalar o cambiar uno de los dos, el otro no tiene porqué verse afectado. Seguiremos los siguientes pasos:
 
-1. Vamos a crear un contenedor con node, express y mongodb.
+1. Vamos a crear un contenedor con node-express
 2. Vamos a crear un contenedor con un servidor de mongodb
-3. Vamos a conectar los dos contenedoresServidor con node, express y mongodb
+3. Vamos a conectar los dos contenedores: node-express y mongodb
 
 ```shell
   mkdir api (dentro de docker_example)
@@ -126,29 +128,29 @@ De esta manera si necesito escalar o cambiar uno de los dos, el otro no tiene po
   npm init
   npm install --save express mongodb
 ```
-  
-# Servidor con node, express y mongodb
-  
+
+## 1. Servidor con express
+
 Vamos a crear un fichero index.js con un servidor express mínimo:
 ```javascript
   const express = require('express');
   const app = express();
   const PORT = 3000;
   app.get('/', function(req, res) {
-  res.json({"hello": "express with mongo"});
+  	res.json({"hello": "express with mongo"});
   });
   app.listen(PORT, function(){
     console.log('Your node js server is running on PORT:',PORT);
   });
 ```
-  
+
 Ejecutamos:
 ```shell
   node index.js
 ```
-Probamos http://localhost:3000
+Probamos http://localhost:3000, vamos a dockerizarlo:
 
-# Comandos de Dockerfile
+## Comandos de Dockerfile
 * *FROM* nos permite especificar desde qué imagen base de Docker Hub
 (https://hub.docker.com/) queremos construir.
 * *RUN* nos permite ejecutar un comando.
@@ -159,7 +161,7 @@ del contenedor a un destino dentro del contenedor.
 * *EXPOSE* expone el puerto en el que el contenedor escuchará.
 * *CMD* establece el comando predeterminado para ejecutar nuestro contenedor.Nuestro Dockerfile para el api node-express
 
-# Creamos el fichero Dockerfile con la configuración de nuestra imagen:
+## Creamos el fichero Dockerfile con la configuración de nuestra imagen:
 ```shell
   FROM node:8
   WORKDIR /usr/src/app
@@ -168,11 +170,11 @@ del contenedor a un destino dentro del contenedor.
   COPY . .
   EXPOSE 8080
   CMD [ "node", "index.js" ]
-```  
-  
-# Fichero .dockerignore
+```
 
-Creamos el fichero .dockerignore para evitar copiar a la imagen los ficheros que no queramos copiar en ella.
+## Fichero .dockerignore
+
+Creamos el fichero '.dockerignore' para evitar copiar a la imagen los ficheros que no queramos copiar en ella.
 ```shell
   node_modules
   *.log
@@ -181,7 +183,7 @@ Creamos el fichero .dockerignore para evitar copiar a la imagen los ficheros que
   data
 ```
 
-# Construyendo y corriendo el contenedor node
+## Construyendo y corriendo el contenedor node
 
 Construimos la imagen según le indica Dockerfile:
 ```shell
@@ -194,12 +196,12 @@ Lanzamos el contenedor:
   docker ps
 ```
 
-# Pregunta
-## ¿Si cambio algo en el index.js se refleja en http://localhost:3000?
-## ¿Por qué?
+### Pregunta
+#### ¿Si cambio algo en el index.js se refleja en http://localhost:3000?
+#### ¿Por qué?
 
-# Solución
-## ¿Cómo podemos hacer para que cualquier cambio en mi local se refleje en el servidor node-express?
+### Solución
+#### ¿Cómo podemos hacer para que cualquier cambio en mi local se refleje en el servidor node-express?
 
 ```shell
   docker run -p 3000:3000 -d -v $(pwd)/index.js:/usr/src/app/index.js manufosela/api
@@ -214,7 +216,8 @@ Aún no se ven los cambios reflejados http://localhost:3000
 
 Ahora sí se ven reflejados los cambios en http://localhost:3000
 
-# Docker de mongoDB
+## 2. Docker de mongodb
+Vamos a utilizar una imagen ya hecha de mongodb:
 ```shell
   docker pull mongo
   docker images
@@ -223,11 +226,14 @@ Ahora sí se ven reflejados los cambios en http://localhost:3000
   docker run -it --link=[NOMBRE_CONT]:mongo mongo /bin/bash
   env
 ```
-Nos fijamos en la ip
+Nos fijamos en la ip y puerto
+
+### Interactuamos para probar mongodb
+El comando para ejecutar mongo es `mongo`, podemos obtener este error: `couldn't connect to server 127.0.0.1:27017, connection attempt failed: SocketException: Error connecting to 127.0.0.1:27017 :: caused by :: Connection refused` Esto puede ocurrir por muchas razones, entre ellas que el demonio de mongo no esté ejecutándose, para ello lo lanzamos y lo dejamos en segundo plano
 ```shell
-  mongo [IP]:27017Probamos mongodb
+mongod &
 ```
-## Interactuamos para probar mongoDB
+pulsamos enter para volver a tener el control y ya ejecutar `mongo`, tras esto tenemos la consola de la base de datos donde podemos ejecutar:
 ```shell
   show dbs
   use local
@@ -239,16 +245,16 @@ Nos fijamos en la ip
   show collections
   db.micoleccion.find()
 ```
-  
-#Conectar docker node con docker MongoDB
 
-Para conectar el contenedor de node, express, mongodb con el contenedor de MongoDB vamos a valernos de docker-compose
-Docker-compose es un orquestador de contenedores para que se relacionen entre ellos.
-Se configura mediante un archivo .yml llamado docker-compose.yml
+## 3. Conectar docker node-express con docker mongodb
+
+Para conectar el contenedor de node-express con el contenedor de mongodb vamos a valernos de *docker-compose*
+**Docker-compose** es un orquestador de contenedores para que se relacionen entre ellos.
+Se configura mediante un archivo *.yml* llamado *docker-compose.yml*
 En dicho fichero se indica qué contenedores se enlazan con quien, de manera
 que de una sola llamada podemos arrancar y relacionar varios contenedores.
 
-# Creamos el fichero docker-compose.yml
+### Creamos el fichero docker-compose.yml
 ```shell
   version: "2"
   services:
@@ -270,7 +276,7 @@ que de una sola llamada podemos arrancar y relacionar varios contenedores.
 
 # Probando docker-compose
 Paramos todos los contenedores anteriores de mongo y api
-Ejecutamos: 
+Ejecutamos:
 ```shell
   docker build
   docker-compose up -d
@@ -285,44 +291,47 @@ Podemos parar todos los contenedores de una vez.
   docker-compose ps
   docker ps
 ```
-  
-#Usando mongo en nuestro API
+
+### Usando mongo en nuestro api
 
 Modificamos el fichero index.js que quedara como sigue:
 ```javascript
-  const express = require('express');
-  const app = express();
-  const mongodb = require('mongodb');
-  const config = {
-  DB: 'mongodb://mongo:27017'
-  };
-  const PORT = 3000;
-  app.get('/', function(req, res) {
-  res.json({"hello": "express with mongo"});
-  });
-  var dbo;
-  const client = mongodb.MongoClient;Usando mongo en nuestro API
-  client.connect(config.DB, function(err, db) {
-  if(err) {
-  console.log('database is not connected')
-  }
-  else {
-  console.log('connected!!');
-  dbo = db.db("midb");
-  }
-  });
-  app.get('/misdatos', function(req, res){
-  let data = dbo.collection("micoleccion").find({}).toArray((err, result) => {
-  if (err) throw err;
-  res.json(result);
-  });
-  });
-  app.listen(PORT, function(){
-  console.log('Your node js server is running on PORT:',PORT);
-  });
+const express = require('express');
+const app = express();
+const PORT = 3000;
+
+const mongodb = require('mongodb');
+const DB = {
+	config: 'mongodb://mongo:27017'
+};
+let dbo;
+
+app.get('/', function (req, res) {
+	res.json({ "hello": "express with mongo" });
+});
+
+const client = mongodb.MongoClient;
+client.connect(DB.config, function (err, db) {
+	if (err) {
+		console.log('database is not connected')
+	}
+	else {
+		console.log('connected!!');
+		dbo = db.db("midb");
+	}
+});
+app.get('/misdatos', function (req, res) {
+	let data = dbo.collection("micoleccion").find({}).toArray((err, result) => {
+		if (err) throw err;
+		res.json(result);
+	});
+});
+app.listen(PORT, function () {
+	console.log('Your node js server is running on PORT:', PORT);
+});
 ```
 
-# Usando mongo en nuestro API
+## Usando mongo en nuestro API
 Ahora para que los cambios tengan efecto debemos parar todo, volver a construir los contenedores y volver a lanzarlos:
 ```shell
   docker-compose down
@@ -333,7 +342,7 @@ Ahora para que los cambios tengan efecto debemos parar todo, volver a construir 
 
 Para poder probar el api debemos cargar con datos la base de datos llamada mibd y la colección de esa base de datos micoleccion
 
-# Probamos los entry-point
+## Probamos los entry-point
 Mediante la consola de mongo creamos la base de datos:
 ```shell
   mongo
