@@ -337,6 +337,7 @@ que de una sola llamada podemos arrancar, parar y relacionar varios contenedores
   - ./data:/data/db
   ports:
   - "27017:27017"
+```
 
 # Paramos los contenedores de node-express y mongodb
 Antes de continuar y para poder utilizar docker-compose debemos parar los contenedores que hemos lanzado manualmente.
