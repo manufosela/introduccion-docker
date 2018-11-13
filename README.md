@@ -339,7 +339,9 @@ que de una sola llamada podemos arrancar, parar y relacionar varios contenedores
   - "27017:27017"
 ```
 
-# Paramos los contenedores de node-express y mongodb
+# Docker-compose
+
+## Paramos los contenedores de node-express y mongodb
 Antes de continuar y para poder utilizar docker-compose debemos parar los contenedores que hemos lanzado manualmente.
 Para ello ejecutamos:
 ```shell
@@ -356,7 +358,7 @@ Con esto los paramos, pero los contenedores siguen lanzados, por lo que ahora de
 docker rm [CONTAINER_ID_NODE] [CONTAINER_ID_MONGO]
 ```
 
-# Probando docker-compose
+## Probando docker-compose
 
 Ejecutamos:
 ```shell
@@ -377,7 +379,7 @@ Lo podemos comprobar con:
   docker ps
 ```
 
-### Usando mongo en nuestro api
+## Usando mongo en nuestro api
 
 Modificamos el fichero index.js que quedara como sigue:
 ```javascript
@@ -416,7 +418,6 @@ app.listen(PORT, function () {
 });
 ```
 
-## Usando mongo en nuestro API
 Ahora para que los cambios tengan efecto debemos parar todo, volver a construir los contenedores y volver a lanzarlos:
 ```shell
   docker-compose down
