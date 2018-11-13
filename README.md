@@ -530,11 +530,14 @@ docker-compose ps
 ```
 
 Podemos entrar en http://localhost y ver como sirve la pagina index.html que creamos en la carpeta /www
+
 Podemos entrar en http://localhost/api y ver como sirve el mensaje que devuelve el servidor node-express cuando accedemos a http://localhost:3000
+
 Podemos entrar en http://localhost/api/misdatos y ver como sirve el json de la base de datos que sirve tambien cuando accedemos a http://localhost:3000/misdatos
 
 
 # Resumiendo
 
-Con docker podemos crear entornos de ejecución aislados y configurarlos a nuestro antojo sin romper nada y asegurando compatiblidad
-Con docker-compose podemos orquestar todos los contenedores creados, comunicarlos e iniciarlo y pararlos fácilmente.
+Con **docker** podemos crear entornos de ejecución aislados y configurarlos a nuestro antojo sin romper nada y asegurando compatiblidad
+
+Con **docker-compose** podemos orquestar todos los contenedores creados, comunicarlos e iniciarlo y pararlos fácilmente.
