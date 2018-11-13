@@ -6,7 +6,7 @@ tutorial introducción a docker y docker-compose creando un api con un contenedo
 Docker es un proyecto de código abierto que automatiza el despliegue
 de aplicaciones dentro de contenedores de software, proporcionando
 una capa adicional de abstracción y automatización de virtualización de
-aplicaciones en múltiples sistemas operativos !Fuente Wikipedia](https://es.wikipedia.org/wiki/Docker_(software))
+aplicaciones en múltiples sistemas operativos [Fuente Wikipedia](https://es.wikipedia.org/wiki/Docker_(software))
 
 Docker es un “emulador” de entornos aislado para poder ejecutar programas sin que afecte a mi sistema operativo (SO) y pudiendose llevar y replicar en otros SS.OO. o entornos.
 Parecido a VirtualBox o VMWare, pero mucho más ligero y a nivel de sistema operativo. Básicamente no vas a tener más de un sistema operativo completo corriendo en tu máquina. ![virtualización vs contenedores](https://i.ytimg.com/vi/TvnZTi_gaNc/maxresdefault.jpg)
@@ -44,7 +44,7 @@ o su alias
   docker ps
 ```
 
-Para bajar una de imágen de docker del ![docker hub](https://hub.docker.com/):
+Para bajar una de imágen de docker del [docker hub](https://hub.docker.com/):
 ```shell
   docker pull IMAGEN
 ```
