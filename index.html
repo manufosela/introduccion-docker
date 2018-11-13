@@ -1,0 +1,609 @@
+<h1 id="introduccionadocker">Introduccion a Docker</h1>
+
+<p>Tutorial de introducción a docker y docker-compose creando un api con un contenedor node-express y otro con mongodb.</p>
+
+<p>[DISCLAIMER] Para este ejemplo se ha utilizado un sistema operativo Ubuntu, por lo que todos los ejemplos de instalación de programas se harán para este entorno. Puedes cambiarlo por los de tu sistema operativo.</p>
+
+<h2 id="quesdocker">¿Qué es docker?</h2>
+
+<p>Docker es un proyecto de código abierto que automatiza el despliegue
+de aplicaciones dentro de contenedores de software, proporcionando
+una capa adicional de abstracción y automatización de virtualización de
+aplicaciones en múltiples sistemas operativos <a href="https://es.wikipedia.org/wiki/Docker_(software)">Fuente Wikipedia</a></p>
+
+<p>Docker es un “emulador” de entornos aislado para poder ejecutar programas sin que afecte a mi sistema operativo (SO) y pudiendose llevar y replicar en otros SS.OO. o entornos.
+Parecido a VirtualBox o VMWare, pero mucho más ligero y a nivel de sistema operativo. Básicamente no vas a tener más de un sistema operativo completo corriendo en tu máquina. <img src="https://i.ytimg.com/vi/TvnZTi_gaNc/maxresdefault.jpg" alt="virtualización vs contenedores" />
+Docker consta de imágenes y contenedores:</p>
+
+<ol>
+<li>Una <strong>imagen</strong> es la especificación inerte, inmmutable, una foto del estado y de unas piezas de software que incluyen desde la aplicación que queremos ejecutar hasta las librerias y todo lo necesario para que corra encima del sistema operativo en el cual se ejecuta.</li>
+
+<li>Un <strong>contenedor</strong> es un entorno aislado con la instanciación de una imagen, el cual
+se puede configurar.</li>
+</ol>
+
+<h1 id="instalacindedockerenubuntu">Instalación de Docker en ubuntu</h1>
+
+<ol>
+<li>Instalamos docker y docker-compose:</li>
+</ol>
+
+<pre><code class="shell language-shell">sudo snap install docker docker-compose
+</code></pre>
+
+<ol>
+<li>Añadimos al usuario de ubuntu al grupo docker</li>
+</ol>
+
+<pre><code class="shell language-shell">sudo usermod -aG docker $USER
+</code></pre>
+
+<ol>
+<li>En https://hub.docker.com/ podemos buscar imagenes de docker ya preparadas</li>
+
+<li>Podemos comprobar qué imágenes tenemos con:</li>
+</ol>
+
+<pre><code class="shell language-shell">  docker images
+</code></pre>
+
+<h1 id="comandosdocker">Comandos Docker</h1>
+
+<h2 id="bsicos">Básicos</h2>
+
+<p>Listado de imágenes de docker instaladas:</p>
+
+<pre><code class="shell language-shell">  docker images
+</code></pre>
+
+<p>Listado de contenedores de docker creados:</p>
+
+<pre><code class="shell language-shell">  docker container ls
+</code></pre>
+
+<p>o su alias</p>
+
+<pre><code class="shell language-shell">  docker ps
+</code></pre>
+
+<p>Para bajar una de imágen de docker del <a href="https://hub.docker.com/">docker hub</a>:</p>
+
+<pre><code class="shell language-shell">  docker pull IMAGEN
+</code></pre>
+
+<h2 id="mscomandos">Más comandos</h2>
+
+<pre><code class="shell language-shell">  docker build -t NOMBRE_CONTENEDOR .
+  docker run IMAGEN
+  docker inspect CONTENEDOR
+  docker logs CONTENEDOR
+  docker exec -it CONTENEDOR /bin/bash
+  docker start / stop / restart CONTENEDOR
+  docker rm CONTENEDOR
+  docker rmi IMAGEN
+</code></pre>
+
+<h1 id="pasosparacrearylanzaruncontenedordocker">Pasos para crear y lanzar un contenedor Docker</h1>
+
+<ol>
+<li>Crear el directorio de trabajo</li>
+
+<li>Entrar en el directorio de trabajo</li>
+
+<li>Crear el fichero Dockerfile</li>
+
+<li>Crear el contenedor: <code>docker build</code></li>
+
+<li>Lanzar el contenedor creado: <code>docker run</code></li>
+
+<li>Comprobar que está lanzado: <code>docker ps</code></li>
+
+<li>Comprobar logs del contenedor: <code>docker logs</code></li>
+</ol>
+
+<h1 id="ejemplocreandouncontenedornginx">Ejemplo: Creando un contenedor nginx</h1>
+
+<h2 id="levantandoelcontenedornginxbsico">Levantando el contenedor nginx básico:</h2>
+
+<pre><code class="shell language-shell">  mkdir docker_example
+  cd docker_example
+  docker pull nginx
+  docker images
+  docker ps
+  docker run -d --name "web" -p 80:80 nginx;
+  docker ps
+  docker logs [CONTENEDOR]
+  docker inspect [CONTENEDOR]
+</code></pre>
+
+<p>Si no tenemos ningún otro proceso corriendo en el puerto 80 podremos entrar en http://localhost y ver la página por defecto de nginx.</p>
+
+<h2 id="montandounacarpetacompartidaentreundirectoriolocalyundirectoriodentrodelcontenedordocker">Montando una carpeta compartida entre un directorio local y un directorio dentro del contenedor Docker</h2>
+
+<pre><code class="shell language-shell">  mkdir www
+  cd www
+  echo “&lt;h1&gt;MI CONTENEDOR NGINX CON DOCKER&lt;/h1&gt;” &gt; index.html
+  cd ..
+  docker stop web
+  docker ps
+  docker run -d --name "web" -p 80:80 -v $(pwd)/www:/usr/share/nginx/html nginx;
+  docker ps
+  docker ps -a
+  docker rm [CONTENEDOR]
+  docker ps -a
+</code></pre>
+
+<p>Analicemos el comando de ejecución del contenedor con sus parámetros:</p>
+
+<pre><code class="shell language-shell">  docker run -d --name "web" -p 80:80 -v $(pwd)/www:/usr/share/nginx/html nginx
+</code></pre>
+
+<p>COMANDO: <strong>run</strong> Sirve para lanzar un contenedor de la imagen nginx, llamado "web"
+PARAMETROS:</p>
+
+<ul>
+<li><strong>-d</strong> o --detach, ejecuta el contenedor en segundo plano (background).</li>
+
+<li><strong>--name</strong> para darle un nombre a nuestro contenedor y sea mas sencillo referenciarlo e identificarlo.</li>
+
+<li><strong>-v</strong> le indicamos que monte un <a href="http://www.alegsa.com.ar/Dic/volumen.php">volumen</a> que enlaza desde la ruta local <em>$(pwd)/www</em>  a la ruta dentro del contenedor <em>/usr/share/nginx/html</em> nginx que es la que utiliza este programa para servir, * <strong>-p</strong> conectamos el puerto 80 de nuestra máquina con el puerto 80 del contenedor, que como tiene el servidor nginx corriendo en dicho puerto, estaremos dando acceso al puerto del contenedor desde nuestro puerto, siempre y cuando este esté libre, si no deberemos ponerlo en un puerto libre de nuestro equipo.</li>
+</ul>
+
+<p>Podemos comprobarlo:</p>
+
+<ul>
+<li>Comprobamos http://localhost en un navegador</li>
+
+<li>Modificamos index.html</li>
+
+<li>Comprobamos http://localhost en un navegador</li>
+</ul>
+
+<h1 id="ejercicios">Ejercicios</h1>
+
+<ol>
+<li>Clonar un componente y hacer que se muestre la demo en un contenedor de nginx</li>
+
+<li>Arrancar tres contenedores de nginx en los puertos 80, 8080 y 8081</li>
+</ol>
+
+<h1 id="haciendomscosascondocker">Haciendo más cosas con Docker</h1>
+
+<h2 id="ysinecesitocrearunservidorexpressennodeparaexponerunapi">¿Y si necesito crear un servidor express en node para exponer un api?</h2>
+
+<p>Pues lo ideal es separar el servidor node-express del servidor de mongodb.
+De esta manera si necesito escalar o cambiar uno de los dos, el otro no tiene porqué verse afectado. Seguiremos los siguientes pasos:</p>
+
+<ol>
+<li>Vamos a crear un contenedor con node-express</li>
+
+<li>Vamos a crear un contenedor con un servidor de mongodb</li>
+
+<li>Vamos a conectar los dos contenedores: node-express y mongodb</li>
+</ol>
+
+<pre><code class="shell language-shell">  mkdir api (dentro de docker_example)
+  cd api
+  npm init
+  npm install --save express mongodb
+</code></pre>
+
+<h2 id="1servidorconexpress">1. Servidor con express</h2>
+
+<p>Vamos a crear un fichero index.js con un servidor express mínimo:</p>
+
+<pre><code class="javascript language-javascript">  const express = require('express');
+  const app = express();
+  const PORT = 3000;
+  app.get('/', function(req, res) {
+      res.json({"hello": "express with mongo"});
+  });
+  app.listen(PORT, function(){
+    console.log('Your node js server is running on PORT:',PORT);
+  });
+</code></pre>
+
+<p>Ejecutamos:</p>
+
+<pre><code class="shell language-shell">  node index.js
+</code></pre>
+
+<p>Probamos http://localhost:3000, vamos a dockerizarlo:</p>
+
+<h2 id="comandosdedockerfile">Comandos de Dockerfile</h2>
+
+<ul>
+<li><em>FROM</em> nos permite especificar desde qué imagen base de Docker Hub
+(https://hub.docker.com/) queremos construir.</li>
+
+<li><em>RUN</em> nos permite ejecutar un comando.</li>
+
+<li><em>WORKDIR</em> establece un directorio como el directorio de trabajo para las
+instrucciones COPY, RUN y CMD.</li>
+
+<li><em>COPY</em> y <em>ADD</em> permite copiar archivos o un directorio completo desde una fuente fuera
+del contenedor a un destino dentro del contenedor.</li>
+
+<li><em>EXPOSE</em> expone el puerto en el que el contenedor escuchará.</li>
+
+<li><em>CMD</em> establece el comando predeterminado para ejecutar nuestro contenedor.Nuestro Dockerfile para el api node-express</li>
+</ul>
+
+<h2 id="creamoselficherodockerfileconlaconfiguracindenuestraimagen">Creamos el fichero Dockerfile con la configuración de nuestra imagen:</h2>
+
+<pre><code class="shell language-shell">  FROM node:8
+  WORKDIR /usr/src/app
+  COPY package*.json ./
+  RUN npm install
+  COPY . .
+  EXPOSE 3000
+  CMD [ "node", "index.js" ]
+</code></pre>
+
+<h2 id="ficherodockerignore">Fichero .dockerignore</h2>
+
+<p>Creamos el fichero '.dockerignore' para evitar copiar a la imagen los ficheros que no queramos copiar en ella.</p>
+
+<pre><code class="shell language-shell">  node_modules
+  *.log
+  docker-compose.yml
+  Dockerfile
+  data
+</code></pre>
+
+<h2 id="construyendoycorriendoelcontenedornode">Construyendo y corriendo el contenedor node</h2>
+
+<p>Construimos la imagen según le indica Dockerfile:</p>
+
+<pre><code class="shell language-shell">  docker build -t manufosela/api .
+  docker images
+</code></pre>
+
+<p>Lanzamos el contenedor:</p>
+
+<pre><code class="shell language-shell">  docker run -p 3000:3000 -d manufosela/api
+  docker ps
+</code></pre>
+
+<h3 id="pregunta">Pregunta</h3>
+
+<h4 id="sicambioalgoenelindexjssereflejaenhttplocalhost3000">¿Si cambio algo en el index.js se refleja en http://localhost:3000?</h4>
+
+<h4 id="porqu">¿Por qué?</h4>
+
+<p>No se refleja puesto que en el Dockerfile hemos indicado con <em>COPY . .</em> que copiemos toda la carpeta, a excepción de lo indicado en el fichero .dockerignore, en la carpeta de trabajo de la imagen. Una vez copiado ya no es posible alterar su contenido.
+Esto es lo que querremos hacer cuando subamos a producción nuestra aplicación, pero no cuando estamos desarrollando.</p>
+
+<h4 id="cmopodemoshacerparaquecualquiercambioenmilocalsereflejeenelservidornodeexpress">¿Cómo podemos hacer para que cualquier cambio en mi local se refleje en el servidor node-express?</h4>
+
+<p>Como hemos visto antes con el parámetro -v podemos referenciar volumenes de tu equipo dentro del contenedor.</p>
+
+<pre><code class="shell language-shell">  docker run -p 3000:3000 -d -v $(pwd)/index.js:/usr/src/app/index.js manufosela/api
+</code></pre>
+
+<p>Modificamos index.js
+Aún no se ven los cambios reflejados http://localhost:3000
+¿Por qué? Por que cuando lanzamos el servidor express, node hace una copia de index.js y lo ejecuta, no lo está leyendo constantemente. Por lo tanto, aunque el fichero index.js haya cambiado el servidor express no lo sabe.
+Si reiniciamos el contenedor, obligaremos a rearrancar el servidor node-express, leyendo dichos cambios.</p>
+
+<pre><code class="shell language-shell">  docker restart [CONTENEDOR_ID]
+</code></pre>
+
+<p>Ahora sí se ven reflejados los cambios en http://localhost:3000
+Podemos utilizar paquetes de npm, como forever, que detectan cambios en el index.js relanzando el servidor node-express.
+Sería necesario por un lado instalar el paquete forever y por otro cambiar el comando CMD para que ejecute forever.
+Lo dejo como ejercicio :)</p>
+
+<h2 id="2dockerdemongodb">2. Docker de mongodb</h2>
+
+<p>Vamos a utilizar la imagen ya hecha de mongodb de docker hub:</p>
+
+<pre><code class="shell language-shell">  docker pull mongo
+  docker images
+  docker run -it -d mongo
+  docker ps
+</code></pre>
+
+<p>Con esto tenemos corriendo un servidor mongodb que expone el puerto 27017, que es el puerto por defecto de mongo, de manera que tenemos una base de datos mongo corriendo en nuestro equipo, pero sin haber tenido que instalar ni configurar nada y sin que haya "ensuciado" nuestro sistema operativo instalando dependencias o librerias.</p>
+
+<h3 id="interactuamosparaprobarmongodb">Interactuamos para probar mongodb</h3>
+
+<p>Para poder probarlo, primero debemos averiguar la IP del servidor mongodb, para ello ejecutamos:</p>
+
+<pre><code class="shell language-shell">  docker ps
+</code></pre>
+
+<p>Nos fijamos, al final, en el nombre aleatorio que le ha dado al contenedor de mongo que serán dos nombres separados por un guion bajo. Usamos dicho nombre para ejecutar lo siguiente:</p>
+
+<pre><code class="shell language-shell">  docker run -it --link=[NOMBRE_CONT]:mongo mongo /bin/bash
+</code></pre>
+
+<p>Con esto entramos en la consola del contenedor que está corriendo el servidor de mongo.
+Ejecutamos:</p>
+
+<pre><code class="shell language-shell">  env
+</code></pre>
+
+<p>Que nos muestra todas las variables de entorno.
+Nos fijamos en la línea que nos muestra MONGO<em>PORT</em>27017<em>TCP</em>ADDR para obntener la ip del contenedor:</p>
+
+<pre><code class="shell language-shell">[...]
+HOME=/root
+SHLVL=1
+MONGO_PORT_27017_TCP_ADDR=172.17.0.3
+MONGO_ENV_JSYAML_VERSION=3.10.0
+MONGO_MAJOR=4.0
+[...]
+</code></pre>
+
+<p>Cerramos la consola con <code>exit</code></p>
+
+<p>El comando para ejecutar mongo es <code>mongo</code> para lo que deberemos tener instalado el cliente de mongodb en nuestro equipo llamado <code>mongodb-clients</code>.
+Para saber si lo tenemos instalado podemos ejecutar:</p>
+
+<pre><code class="shell language-shell">sudo dpkg --get-selections | grep mongo
+</code></pre>
+
+<p>Si no lo está lo podemos instalar con:</p>
+
+<pre><code class="shell language-shell">sudo apt install mongodb-clients
+</code></pre>
+
+<p>Si lo ejecutamos simplemente <code>mongo</code> y no tenemos un servidor mongodb local corriendo, obtendremos este error: <code>couldn't connect to server 127.0.0.1:27017, connection attempt failed: SocketException: Error connecting to 127.0.0.1:27017 :: caused by :: Connection refused</code></p>
+
+<p>Para poder conectar con el servidor mongodb de nuestro contenedor deberemos indicar la ip y el puerto al que conectarnos:</p>
+
+<pre><code class="shell language-shell">mongo 172.17.0.3:27017
+</code></pre>
+
+<p>Esto nos conectará con la línea de comandos de mongo que se caracteriza por tener el prompt <strong>></strong>
+Para interactuar con la base de datos podemos ejecutar algunos comandos de mongo:</p>
+
+<pre><code class="shell language-shell"> &gt; show dbs
+ &gt; use local
+ &gt; show collections
+ &gt; db.startup_log.find({})
+ &gt; db.startup_log.find({}).pretty()
+ &gt; use midb
+ &gt; db.micoleccion.insert({elemento:"uno"})
+ &gt; show collections
+ &gt; db.micoleccion.find()
+</code></pre>
+
+<p>Usamos CTRL+C para salir de la consola de mongo.</p>
+
+<h2 id="3conectardockernodeexpresscondockermongodb">3. Conectar docker node-express con docker mongodb</h2>
+
+<p>Para facilitar y conectar el contenedor de node-express con el contenedor de mongodb vamos a valernos de <em>docker-compose</em></p>
+
+<p><strong>Docker-compose</strong> nos facilita la orquestación de contenedores para que se relacionen e interactuen entre ellos.
+Se configura mediante un archivo <em>.yml</em> llamado <em>docker-compose.yml</em>
+En dicho fichero se indica qué contenedores se enlazan con quien, de manera
+que de una sola llamada podemos arrancar, parar y relacionar varios contenedores.</p>
+
+<h3 id="creamoselficherodockercomposeyml">Creamos el fichero docker-compose.yml</h3>
+
+<pre><code class="shell language-shell">  version: "2"
+  services:
+  app:
+  container_name: app
+  restart: always
+  build: .
+  ports:
+  - "3000:3000"
+  links:
+  - mongo
+  mongo:
+  container_name: mongo
+  image: mongo
+  volumes:
+  - ./data:/data/db
+  ports:
+  - "27017:27017"
+</code></pre>
+
+<h1 id="dockercompose">Docker-compose</h1>
+
+<h2 id="paramosloscontenedoresdenodeexpressymongodb">Paramos los contenedores de node-express y mongodb</h2>
+
+<p>Antes de continuar y para poder utilizar docker-compose debemos parar los contenedores que hemos lanzado manualmente.
+Para ello ejecutamos:</p>
+
+<pre><code class="shell language-shell">docker ps
+</code></pre>
+
+<p>Y anotamos los CONTAINER_ID del contenedor de mongo y node-express, el de nginx podemos dejarlo corriendo.
+Una vez tengamos los dos ids ejecutamos:</p>
+
+<pre><code class="shell language-shell">docker stop [CONTAINER_ID_NODE] [CONTAINER_ID_MONGO]
+</code></pre>
+
+<p>Con esto los paramos, pero los contenedores siguen lanzados, por lo que ahora deberemos borrarlos:</p>
+
+<pre><code class="shell language-shell">docker rm [CONTAINER_ID_NODE] [CONTAINER_ID_MONGO]
+</code></pre>
+
+<h2 id="probandodockercompose">Probando docker-compose</h2>
+
+<p>Ejecutamos:</p>
+
+<pre><code class="shell language-shell">  docker-compose build
+  docker-compose up -d
+  docker-compose ps
+</code></pre>
+
+<p>Podemos probar que tenemos servidor de node y de mongo corriendo, entrando en [http:localhost:3000] y ejecutando el comando <code>mongo</code>, esta vez sin IP ni puerto, ya que docker-compose conecta automaticamente localhost con la IP del contenedor mongo.</p>
+
+<p>Podemos parar y borrar todos los contenedores de una vez.</p>
+
+<pre><code class="shell language-shell">  docker-compose down
+</code></pre>
+
+<p>Lo podemos comprobar con:</p>
+
+<pre><code class="shell language-shell">  docker-compose ps
+  docker ps
+</code></pre>
+
+<h2 id="usandomongoennuestroapi">Usando mongo en nuestro api</h2>
+
+<p>Modificamos el fichero index.js que quedara como sigue:</p>
+
+<pre><code class="javascript language-javascript">const express = require('express');
+const app = express();
+const PORT = 3000;
+
+const mongodb = require('mongodb');
+const DB = {
+    config: 'mongodb://mongo:27017'
+};
+let dbo;
+
+app.get('/', function (req, res) {
+    res.json({ "hello": "express with mongo" });
+});
+
+const client = mongodb.MongoClient;
+client.connect(DB.config, function (err, db) {
+    if (err) {
+        console.log('database is not connected')
+    }
+    else {
+        console.log('connected!!');
+        dbo = db.db("midb");
+    }
+});
+app.get('/misdatos', function (req, res) {
+    let data = dbo.collection("micoleccion").find({}).toArray((err, result) =&gt; {
+        if (err) throw err;
+        res.json(result);
+    });
+});
+app.listen(PORT, function () {
+    console.log('Your node js server is running on PORT:', PORT);
+});
+</code></pre>
+
+<p>Ahora para que los cambios tengan efecto debemos parar todo, volver a construir los contenedores y volver a lanzarlos:</p>
+
+<pre><code class="shell language-shell">  docker-compose down
+  docker-compose build
+  docker-compose up -d
+  docker-compose ps
+</code></pre>
+
+<p>Para poder probar el api debemos cargar con datos la base de datos llamada mibd y la colección de esa base de datos micoleccion</p>
+
+<h2 id="probamoslosentrypoint">Probamos los entry-point</h2>
+
+<p>Mediante la consola de mongo podemos crear alguna entrada en la base de datos:</p>
+
+<pre><code class="shell language-shell">  mongo
+  &gt; use midb
+  &gt; db.micoleccion.insert({“titulo”: “primero de prueba”})
+  &gt; exit
+</code></pre>
+
+<p>o bien importar un fichero con los datos</p>
+
+<pre><code class="shell language-shell">mongoimport --db midb --collection micoleccion --file datos.json
+</code></pre>
+
+<p>El fichero datos.json contendrá información de esta manera:</p>
+
+<p>{ "<em>id" : 1, "titulo": "primero de prueba"}
+{ "</em>id" : 2, "titulo": "segundo de prueba"}</p>
+
+<p>Probamos en [http://localhost:3000/misdatos] y veremos como nos muestra el json de la información que se recupera.</p>
+
+<h1 id="usarnginxparaservirlosestaticosyelapi">Usar Nginx para servir los estaticos y el API</h1>
+
+<p>Ya que tenemos la imagen de nginx instalada y el contenedor corriendo, en vez de tener que usar el puerto 3000 para llamar a nuestro API, podemos facilitarlo con nginx que haga de proxy y redirija una url del puerto 80 al puerto 3000.</p>
+
+<h2 id="creandolaconfiguracindenginx">Creando la configuración de nginx</h2>
+
+<p>Seguimos dentro de nuestro directorio <code>docker_example</code></p>
+
+<pre><code class="shell language-shell">mkdir config
+cd config
+</code></pre>
+
+<p>Creamos un archivo llamado <strong>api.conf</strong> con el siguiente contenido:</p>
+
+<pre><code class="shell language-shell">    server {
+        listen          80;
+        server_name     localhost;
+
+        location / {
+                root /usr/share/nginx/html;
+                index index.html index.htm;
+        }
+
+        location /api/ {
+            resolver app;
+            proxy_pass http://app:3000/;
+            proxy_set_header  X-Real-IP  $remote_addr;
+            proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header  Host $http_host;
+            proxy_redirect    off;
+        }
+    }
+</code></pre>
+
+<p>Este fichero de configuración reemplazará al que trae por defecto nginx.
+Lo único que hemos hecho ha sido añadir el apartado "location /api/" para indicar que cuando se llame a http://localhost/api queremos que haga un "proxy_pass" a "localhost:3000", enmascarando las llamadas a nuestro API.</p>
+
+<h2 id="aadiendonginxalaconfiguraciondedockercompose">Añadiendo nginx a la configuracion de docker-compose</h2>
+
+<p>Ahora hay que modificar el fichero docker-compose para que tambien lance el contenedor de nginx:</p>
+
+<pre><code class="shell language-shell">        version: "2"
+    services:
+      app:
+        container_name: app
+        restart: always
+        build: .
+        ports:
+          - "3000:3000"
+        links:
+          - mongo
+      mongo:
+        container_name: mongo
+        image: mongo
+        volumes:
+          - ./data:/data/db
+        ports:
+          - "27017:27017"
+      web:
+        container_name: web
+        image: nginx
+        volumes:
+          - ./config/api.conf:/etc/nginx/conf.d/default.conf
+          - ../www:/usr/share/nginx/html
+        ports:
+          - "80:80"
+        links:
+          - app
+</code></pre>
+
+<p>Como podemos apreciar por la sintaxis del bloque "web", usarmos la imagen de nginx, montamos el volumen api.conf dentro de la configuración por defecto de nginx y exponemos el puerto 80 con el del contenedor.
+Ahora vamos a probar.</p>
+
+<h2 id="probamoslanuevaconfiguracincontenedornodeexpresscontenedormongodbcontenedornginx">Probamos la nueva configuración: contenedor node-express, contenedor mongodb, contenedor nginx</h2>
+
+<pre><code class="shell language-shell">docker-compose build
+docker-compose up -d
+docker-compose ps
+</code></pre>
+
+<p>Podemos entrar en http://localhost y ver como sirve la pagina index.html que creamos en la carpeta /www</p>
+
+<p>Podemos entrar en http://localhost/api y ver como sirve el mensaje que devuelve el servidor node-express cuando accedemos a http://localhost:3000</p>
+
+<p>Podemos entrar en http://localhost/api/misdatos y ver como sirve el json de la base de datos que sirve tambien cuando accedemos a http://localhost:3000/misdatos</p>
+
+<h1 id="resumiendo">Resumiendo</h1>
+
+<p>Con <strong>docker</strong> podemos crear entornos de ejecución aislados y configurarlos a nuestro antojo sin romper nada y asegurando compatiblidad</p>
+
+<p>Con <strong>docker-compose</strong> podemos orquestar todos los contenedores creados, comunicarlos e iniciarlo y pararlos fácilmente.</p>
