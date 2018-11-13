@@ -44,7 +44,7 @@ o su alias
   docker ps
 ```
 
-Para bajar una de imágen de docker del docker hub:
+Para bajar una de imágen de docker del ![docker hub](https://hub.docker.com/):
 ```shell
   docker pull IMAGEN
 ```
