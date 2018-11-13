@@ -447,3 +447,94 @@ El fichero datos.json contendrá información de esta manera:
 { "_id" : 2, "titulo": "segundo de prueba"}
 
 Probamos en [http://localhost:3000/misdatos] y veremos como nos muestra el json de la información que se recupera.
+
+# Usar Nginx para servir los estaticos y el API
+
+Ya que tenemos la imagen de nginx instalada y el contenedor corriendo, en vez de tener que usar el puerto 3000 para llamar a nuestro API, podemos facilitarlo con nginx que haga de proxy y redirija una url del puerto 80 al puerto 3000.
+
+## Creando la configuración de nginx
+
+Seguimos dentro de nuestro directorio `docker_example`
+```shell
+mkdir config
+cd config
+```
+Creamos un archivo llamado **api.conf** con el siguiente contenido:
+```shell
+    server {
+        listen          80;
+        server_name     localhost;
+
+        location / {
+                root /usr/share/nginx/html;
+                index index.html index.htm;
+        }
+
+        location /api/ {
+            resolver app;
+            proxy_pass http://app:3000/;
+            proxy_set_header  X-Real-IP  $remote_addr;
+            proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header  Host $http_host;
+            proxy_redirect    off;
+        }
+    }
+```
+
+Este fichero de configuración reemplazará al que trae por defecto nginx.
+Lo único que hemos hecho ha sido añadir el apartado "location /api/" para indicar que cuando se llame a http://localhost/api queremos que haga un "proxy_pass" a "localhost:3000", enmascarando las llamadas a nuestro API.
+
+## Añadiendo nginx a la configuracion de docker-compose
+Ahora hay que modificar el fichero docker-compose para que tambien lance el contenedor de nginx:
+
+```shell
+        version: "2"
+	services:
+	  app:
+	    container_name: app
+	    restart: always
+	    build: .
+	    ports:
+	      - "3000:3000"
+	    links:
+	      - mongo
+	  mongo:
+	    container_name: mongo
+	    image: mongo
+	    volumes:
+	      - ./data:/data/db
+	    ports:
+	      - "27017:27017"
+	  web:
+	    container_name: web
+	    image: nginx
+	    volumes:
+	      - ./config/api.conf:/etc/nginx/conf.d/default.conf
+	      - ../www:/usr/share/nginx/html
+	    ports:
+	      - "80:80"
+	    links:
+	      - app
+
+```
+
+Como podemos apreciar por la sintaxis del bloque "web", usarmos la imagen de nginx, montamos el volumen api.conf dentro de la configuración por defecto de nginx y exponemos el puerto 80 con el del contenedor.
+Ahora vamos a probar.
+
+## Probamos la nueva configuración: contenedor node-express, contenedor mongodb, contenedor nginx
+
+```shell
+docker-compose build
+docker-compose up -d
+docker-compose ps
+```
+
+Podemos entrar en http://localhost y ver como sirve la pagina index.html que creamos en la carpeta /www
+Podemos entrar en http://localhost/api y ver como sirve el mensaje que devuelve el servidor node-express cuando accedemos a http://localhost:3000
+Podemos entrar en http://localhost/api/misdatos y ver como sirve el json de la base de datos que sirve tambien cuando accedemos a http://localhost:3000/misdatos
+
+
+# Resumiendo
+
+Con docker podemos crear entornos de ejecución aislados y configurarlos a nuestro antojo sin romper nada y asegurando compatiblidad
+Con docker-compose podemos orquestar todos los contenedores creados, comunicarlos e iniciarlo y pararlos fácilmente.
