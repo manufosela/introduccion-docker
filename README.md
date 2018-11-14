@@ -1,7 +1,10 @@
 # Introduccion a Docker
-Tutorial de introducción a docker y docker-compose creando un api con un contenedor node-express y otro con mongodb.
+Tutorial de introducción a docker y docker-compose creando una aplicación fullstack, con un contenedor node-express para el api, otro con mongodb y otro con nginx para servir los ficheros estáticos.
 
-[DISCLAIMER] Para este ejemplo se ha utilizado un sistema operativo Ubuntu, por lo que todos los ejemplos de instalación de programas se harán para este entorno. Puedes cambiarlo por los de tu sistema operativo.
+[NOTAS] 
+* Para este ejemplo se ha utilizado un sistema operativo Ubuntu, por lo que todos los ejemplos de instalación de programas se harán para este entorno. Puedes cambiarlo por los de tu sistema operativo.
+* El sistema operativo tiene instalado node 8 y npm
+* Cuidado con el copy-paste desde el README que puede hacer que no funcione, es preferible bajar el fichero del repo.
 
 ## ¿Qué es docker?
 
@@ -321,22 +324,22 @@ que de una sola llamada podemos arrancar, parar y relacionar varios contenedores
 ### Creamos el fichero docker-compose.yml
 ```shell
   version: "2"
-  services:
-  app:
-  container_name: app
-  restart: always
-  build: .
-  ports:
-  - "3000:3000"
-  links:
-  - mongo
-  mongo:
-  container_name: mongo
-  image: mongo
-  volumes:
-  - ./data:/data/db
-  ports:
-  - "27017:27017"
+    services:
+      app:
+        container_name: app
+  	restart: always
+  	build: .
+      	ports:
+  	  - "3000:3000"
+  	links:
+  	  - mongo
+      mongo:
+  	container_name: mongo
+  	image: mongo
+  	volumes:
+  	  - ./data:/data/db
+  	ports:
+  	  - "27017:27017"
 ```
 
 # Docker-compose
@@ -454,7 +457,7 @@ Ya que tenemos la imagen de nginx instalada y el contenedor corriendo, en vez de
 
 ## Creando la configuración de nginx
 
-Seguimos dentro de nuestro directorio `docker_example`
+Seguimos dentro de nuestro directorio `docker_example/api` y creamos el directorio config y entramos en él:
 ```shell
 mkdir config
 cd config
