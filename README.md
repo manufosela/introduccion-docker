@@ -113,7 +113,8 @@ COMANDO: **run** Sirve para lanzar un contenedor de la imagen nginx, llamado "we
 PARAMETROS:
 * **-d** o --detach, ejecuta el contenedor en segundo plano (background).
 * **--name** para darle un nombre a nuestro contenedor y sea mas sencillo referenciarlo e identificarlo.
-* **-v** le indicamos que monte un [volumen](http://www.alegsa.com.ar/Dic/volumen.php) que enlaza desde la ruta local *$(pwd)/www*  a la ruta dentro del contenedor */usr/share/nginx/html* nginx que es la que utiliza este programa para servir, * **-p** conectamos el puerto 80 de nuestra máquina con el puerto 80 del contenedor, que como tiene el servidor nginx corriendo en dicho puerto, estaremos dando acceso al puerto del contenedor desde nuestro puerto, siempre y cuando este esté libre, si no deberemos ponerlo en un puerto libre de nuestro equipo.
+* **-v** le indicamos que monte un [volumen](http://www.alegsa.com.ar/Dic/volumen.php) que enlaza desde la ruta local *$(pwd)/www*  a la ruta dentro del contenedor */usr/share/nginx/html* nginx que es la que utiliza este programa para servir
+* **-p** conectamos el puerto 80 de nuestra máquina con el puerto 80 del contenedor, que como tiene el servidor nginx corriendo en dicho puerto, estaremos dando acceso al puerto del contenedor desde nuestro puerto, siempre y cuando este esté libre, si no deberemos ponerlo en un puerto libre de nuestro equipo.
 
 Podemos comprobarlo:
 * Comprobamos http://localhost en un navegador
