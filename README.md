@@ -264,7 +264,7 @@ Ejecutamos:
   env
 ```
 Que nos muestra todas las variables de entorno.
-Nos fijamos en la línea que nos muestra MONGO_PORT_27017_TCP_ADDR para obntener la ip del contenedor:
+Nos fijamos en la línea que nos muestra MONGO_PORT_27017_TCP_ADDR para obtener la ip del contenedor:
 
 ```shell
 [...]
