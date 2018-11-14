@@ -317,6 +317,9 @@ Usamos CTRL+C para salir de la consola de mongo.
 
 Para facilitar y conectar el contenedor de node-express con el contenedor de mongodb vamos a valernos de *docker-compose*
 
+![Docker y Docker-compose](https://ibb.co/dyt5uf)
+
+
 **Docker-compose** nos facilita la orquestación de contenedores para que se relacionen e interactuen entre ellos.
 Se configura mediante un archivo *.yml* llamado *docker-compose.yml*
 En dicho fichero se indica qué contenedores se enlazan con quien, de manera
