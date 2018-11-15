@@ -223,15 +223,16 @@ Como hemos visto antes con el parámetro -v podemos referenciar volumenes de tu 
 ```
 
 Modificamos index.js
-Aún no se ven los cambios reflejados http://localhost:3000
-¿Por qué? Por que cuando lanzamos el servidor express, node hace una copia de index.js y lo ejecuta, no lo está leyendo constantemente. Por lo tanto, aunque el fichero index.js haya cambiado el servidor express no lo sabe.
-Si reiniciamos el contenedor, obligaremos a rearrancar el servidor node-express, leyendo dichos cambios.
+Tendremos que borrar el contenedor y volver a construirlo y volver a ejecutar el contenedor para que el servidor node-express lea los cambios.
 
 ```shell
-  docker restart [CONTENEDOR_ID]
+	docker rm [CONTENEDOR_ID]
+	docker build -t manufosela/api .
+	docker run -p 3000:3000 -d manufosela/api
 ```
 
 Ahora sí se ven reflejados los cambios en http://localhost:3000
+
 Podemos utilizar paquetes de npm, como forever, que detectan cambios en el index.js relanzando el servidor node-express.
 Sería necesario por un lado instalar el paquete forever y por otro cambiar el comando CMD para que ejecute forever.
 Lo dejo como ejercicio :)
