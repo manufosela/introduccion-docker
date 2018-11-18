@@ -1,21 +1,18 @@
-# Introduccion a Docker
-Tutorial de introducción a docker y docker-compose creando una aplicación fullstack, con un contenedor node-express para el api, otro con mongodb y otro con nginx para servir los ficheros estáticos.
-
-[NOTAS] 
-* Para este ejemplo se ha utilizado un sistema operativo Ubuntu, por lo que todos los ejemplos de instalación de programas se harán para este entorno. Puedes cambiarlo por los de tu sistema operativo.
-* El sistema operativo tiene instalado node 8 y npm
-* Cuidado con el copy-paste desde el README que puede hacer que no funcione, es preferible bajar el fichero del repo.
+# Curso de introducción a Docker
+Este curso pretende ser un primer acercamiento a la tecnología de Docker, así como a la filosofía DevOps, que es de gran ayuda a la realización de software de manera colectiva y colaborativa.
+El software incluido en este curso está compuesto por un front-end in node (con el framework *express*), un back-end in python, y una base de datos en mysql para asegurar la persistencia de los datos.
 
 ## ¿Qué es docker?
 
-Docker es un proyecto de código abierto que automatiza el despliegue
-de aplicaciones dentro de contenedores de software, proporcionando
-una capa adicional de abstracción y automatización de virtualización de
-aplicaciones en múltiples sistemas operativos [Fuente Wikipedia](https://es.wikipedia.org/wiki/Docker_(software))
+Docker es un proyecto **open source** de virtualización que automatiza la ejecución de procesos dentro de **contenedores**, proporcionando una capa adicional de aislamiento, abstracción y automatización de aplicaciones en múltiples entornos.
+En wikipedia podéis encontrar más detalles acerca de su infraestructura.
+[Fuente Wikipedia](https://es.wikipedia.org/wiki/Docker_(software))
 
-Docker es un “emulador” de entornos aislado para poder ejecutar programas sin que afecte a mi sistema operativo (SO) y pudiendose llevar y replicar en otros SS.OO. o entornos.
-Parecido a VirtualBox o VMWare, pero mucho más ligero y a nivel de sistema operativo. Básicamente no vas a tener más de un sistema operativo completo corriendo en tu máquina. ![virtualización vs contenedores](https://i.ytimg.com/vi/TvnZTi_gaNc/maxresdefault.jpg)
-Docker consta de imágenes y contenedores:
+Docker ejecuta procesos de forma controlada y aislada en un sistema operativo huesped, usando sus recursos hardware y software sin necesidad de tenerlos reservados.
+Se diferencia de las clásicas arquitecturas de máquinas virtuales (*Virtualbox* / *VMWare*) por no necesitar un *hypervisor* con un sistema operativo dedicado para la ejecución de las aplicaciones virtualizadas.
+![virtualización vs contenedores](https://i.ytimg.com/vi/TvnZTi_gaNc/maxresdefault.jpg)
+
+Una aplicación, para poder ser ejecutada en docker, necesita de los siguientes componentes:
 1. Una **imagen** es la especificación inerte, inmmutable, una foto del estado y de unas piezas de software que incluyen desde la aplicación que queremos ejecutar hasta las librerias y todo lo necesario para que corra encima del sistema operativo en el cual se ejecuta.
 2. Un **contenedor** es un entorno aislado con la instanciación de una imagen, el cual
 se puede configurar.
