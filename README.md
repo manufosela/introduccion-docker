@@ -1,7 +1,10 @@
 # Introduccion a Docker
-Tutorial de introducción a docker y docker-compose creando un api con un contenedor node-express y otro con mongodb.
+Tutorial de introducción a docker y docker-compose creando una aplicación fullstack, con un contenedor node-express para el api, otro con mongodb y otro con nginx para servir los ficheros estáticos.
 
-[DISCLAIMER] Para este ejemplo se ha utilizado un sistema operativo Ubuntu, por lo que todos los ejemplos de instalación de programas se harán para este entorno. Puedes cambiarlo por los de tu sistema operativo.
+[NOTAS] 
+* Para este ejemplo se ha utilizado un sistema operativo Ubuntu, por lo que todos los ejemplos de instalación de programas se harán para este entorno. Puedes cambiarlo por los de tu sistema operativo.
+* El sistema operativo tiene instalado node 8 y npm
+* Cuidado con el copy-paste desde el README que puede hacer que no funcione, es preferible bajar el fichero del repo.
 
 ## ¿Qué es docker?
 
@@ -110,7 +113,8 @@ COMANDO: **run** Sirve para lanzar un contenedor de la imagen nginx, llamado "we
 PARAMETROS:
 * **-d** o --detach, ejecuta el contenedor en segundo plano (background).
 * **--name** para darle un nombre a nuestro contenedor y sea mas sencillo referenciarlo e identificarlo.
-* **-v** le indicamos que monte un [volumen](http://www.alegsa.com.ar/Dic/volumen.php) que enlaza desde la ruta local *$(pwd)/www*  a la ruta dentro del contenedor */usr/share/nginx/html* nginx que es la que utiliza este programa para servir, * **-p** conectamos el puerto 80 de nuestra máquina con el puerto 80 del contenedor, que como tiene el servidor nginx corriendo en dicho puerto, estaremos dando acceso al puerto del contenedor desde nuestro puerto, siempre y cuando este esté libre, si no deberemos ponerlo en un puerto libre de nuestro equipo.
+* **-v** le indicamos que monte un [volumen](http://www.alegsa.com.ar/Dic/volumen.php) que enlaza desde la ruta local *$(pwd)/www*  a la ruta dentro del contenedor */usr/share/nginx/html* nginx que es la que utiliza este programa para servir
+* **-p** conectamos el puerto 80 de nuestra máquina con el puerto 80 del contenedor, que como tiene el servidor nginx corriendo en dicho puerto, estaremos dando acceso al puerto del contenedor desde nuestro puerto, siempre y cuando este esté libre, si no deberemos ponerlo en un puerto libre de nuestro equipo.
 
 Podemos comprobarlo:
 * Comprobamos http://localhost en un navegador
@@ -219,15 +223,16 @@ Como hemos visto antes con el parámetro -v podemos referenciar volumenes de tu 
 ```
 
 Modificamos index.js
-Aún no se ven los cambios reflejados http://localhost:3000
-¿Por qué? Por que cuando lanzamos el servidor express, node hace una copia de index.js y lo ejecuta, no lo está leyendo constantemente. Por lo tanto, aunque el fichero index.js haya cambiado el servidor express no lo sabe.
-Si reiniciamos el contenedor, obligaremos a rearrancar el servidor node-express, leyendo dichos cambios.
+Tendremos que borrar el contenedor y volver a construirlo y volver a ejecutar el contenedor para que el servidor node-express lea los cambios.
 
 ```shell
-  docker restart [CONTENEDOR_ID]
+	docker rm [CONTENEDOR_ID]
+	docker build -t manufosela/api .
+	docker run -p 3000:3000 -d manufosela/api
 ```
 
 Ahora sí se ven reflejados los cambios en http://localhost:3000
+
 Podemos utilizar paquetes de npm, como forever, que detectan cambios en el index.js relanzando el servidor node-express.
 Sería necesario por un lado instalar el paquete forever y por otro cambiar el comando CMD para que ejecute forever.
 Lo dejo como ejercicio :)
@@ -260,7 +265,7 @@ Ejecutamos:
   env
 ```
 Que nos muestra todas las variables de entorno.
-Nos fijamos en la línea que nos muestra MONGO_PORT_27017_TCP_ADDR para obntener la ip del contenedor:
+Nos fijamos en la línea que nos muestra MONGO_PORT_27017_TCP_ADDR para obtener la ip del contenedor:
 
 ```shell
 [...]
@@ -313,6 +318,9 @@ Usamos CTRL+C para salir de la consola de mongo.
 
 Para facilitar y conectar el contenedor de node-express con el contenedor de mongodb vamos a valernos de *docker-compose*
 
+![Docker y Docker-compose](http://i66.tinypic.com/2ura0pi.png)
+
+
 **Docker-compose** nos facilita la orquestación de contenedores para que se relacionen e interactuen entre ellos.
 Se configura mediante un archivo *.yml* llamado *docker-compose.yml*
 En dicho fichero se indica qué contenedores se enlazan con quien, de manera
@@ -321,22 +329,22 @@ que de una sola llamada podemos arrancar, parar y relacionar varios contenedores
 ### Creamos el fichero docker-compose.yml
 ```shell
   version: "2"
-  services:
-  app:
-  container_name: app
-  restart: always
-  build: .
-  ports:
-  - "3000:3000"
-  links:
-  - mongo
-  mongo:
-  container_name: mongo
-  image: mongo
-  volumes:
-  - ./data:/data/db
-  ports:
-  - "27017:27017"
+    services:
+      app:
+        container_name: app
+  	restart: always
+  	build: .
+      	ports:
+  	  - "3000:3000"
+  	links:
+  	  - mongo
+      mongo:
+  	container_name: mongo
+  	image: mongo
+  	volumes:
+  	  - ./data:/data/db
+  	ports:
+  	  - "27017:27017"
 ```
 
 # Docker-compose
@@ -454,7 +462,7 @@ Ya que tenemos la imagen de nginx instalada y el contenedor corriendo, en vez de
 
 ## Creando la configuración de nginx
 
-Seguimos dentro de nuestro directorio `docker_example`
+Seguimos dentro de nuestro directorio `docker_example/api` y creamos el directorio config y entramos en él:
 ```shell
 mkdir config
 cd config
