@@ -20,10 +20,12 @@ Docker consta de imágenes y contenedores:
 2. Un **contenedor** es un entorno aislado con la instanciación de una imagen, el cual
 se puede configurar.
 
+Una analogía sería que la imagen es la clase y el contenedor el objeto de la clase.
+
 # Instalación de Docker en ubuntu
 1. Instalamos docker y docker-compose:
 ```shell
-sudo snap install docker docker-compose
+sudo apt install docker docker-compose
 ```
 2. Añadimos al usuario de ubuntu al grupo docker
 ```shell
@@ -56,15 +58,23 @@ Para bajar una de imágen de docker del [docker hub](https://hub.docker.com/):
 
 ## Más comandos
 ```shell
-  docker build -t NOMBRE_CONTENEDOR .
-  docker run IMAGEN
-  docker inspect CONTENEDOR
-  docker logs CONTENEDOR
+  docker build -t NOMBRE_IMAGEN .
+  docker run NOMBRE_IMAGEN
+  docker inspect CONTENEDOR-ID
+  docker logs CONTENEDOR-ID
   docker exec -it CONTENEDOR /bin/bash
-  docker start / stop / restart CONTENEDOR
-  docker rm CONTENEDOR
+  docker start / stop / restart CONTENEDOR-ID
+  docker rm CONTENEDOR-ID
   docker rmi IMAGEN
 ```
+
+* **build** se utiliza para generar/contruir una imagen a partir del Dockerfile
+* **run** se utiliza para lanzar el contenedor a partir de una imagen
+* **inspect** se utiliza para obtener información a bajo nivel del contenedor
+* **logs** se utiliza para ver la salida generada por consola al ejecutar el contenedor
+* **exec** se utiliza para ejecutar comandos en un contenedor que está ejecutandose
+* **rm** se utiliza para borrar un contenedor que está ejecutandose
+* **rmi** para borrar una imagen creada
 
 # Pasos para crear y lanzar un contenedor Docker
 1. Crear el directorio de trabajo
@@ -86,8 +96,8 @@ Para bajar una de imágen de docker del [docker hub](https://hub.docker.com/):
   docker ps
   docker run -d --name "web" -p 80:80 nginx;
   docker ps
-  docker logs [CONTENEDOR]
-  docker inspect [CONTENEDOR]
+  docker logs [CONTENEDOR-ID]
+  docker inspect [CONTENEDOR-ID]
 ```
 Si no tenemos ningún otro proceso corriendo en el puerto 80 podremos entrar en http://localhost y ver la página por defecto de nginx.
 
@@ -101,10 +111,17 @@ Si no tenemos ningún otro proceso corriendo en el puerto 80 podremos entrar en 
   docker ps
   docker run -d --name "web" -p 80:80 -v $(pwd)/www:/usr/share/nginx/html nginx;
   docker ps
-  docker ps -a
-  docker rm [CONTENEDOR]
+```
+Para comprobar mas contenedores que se hayan podido quedar "zombies" podemos usar la opción -a (--all)
+```shell
   docker ps -a
 ```
+Para eliminar un contenedor "zombie" podemos usar el comando rm
+```shell
+  docker rm [CONTENEDOR-ID]
+  docker ps -a
+```
+
 Analicemos el comando de ejecución del contenedor con sus parámetros:
 ```shell
   docker run -d --name "web" -p 80:80 -v $(pwd)/www:/usr/share/nginx/html nginx
@@ -122,12 +139,12 @@ Podemos comprobarlo:
 * Comprobamos http://localhost en un navegador
 
 # Ejercicios
-1. Clonar un componente y hacer que se muestre la demo en un contenedor de nginx
+1. Clonar un componente Polymer y hacer que se muestre la demo en un contenedor de nginx
 2. Arrancar tres contenedores de nginx en los puertos 80, 8080 y 8081
 
 # Haciendo más cosas con Docker
 
-## ¿Y si necesito crear un servidor express en node para exponer un api?
+## ¿Y si necesito crear un servidor express en node para exponer un api que se alimente de mongodb?
 Pues lo ideal es separar el servidor node-express del servidor de mongodb.
 De esta manera si necesito escalar o cambiar uno de los dos, el otro no tiene porqué verse afectado. Seguiremos los siguientes pasos:
 
@@ -135,6 +152,7 @@ De esta manera si necesito escalar o cambiar uno de los dos, el otro no tiene po
 2. Vamos a crear un contenedor con un servidor de mongodb
 3. Vamos a conectar los dos contenedores: node-express y mongodb
 
+Previamente creamos la carpeta de la aplicacion, iniciamos el proyecto node e instalando mongodb:
 ```shell
   mkdir api (dentro de docker_example)
   cd api
@@ -161,7 +179,9 @@ Ejecutamos:
 ```shell
   node index.js
 ```
-Probamos http://localhost:3000, vamos a dockerizarlo:
+Probamos http://localhost:3000 y comprobamos que muestra el json: {"hello": "express with mongo"}
+
+Lo siguiente será dockerizarlo.
 
 ## Comandos de Dockerfile
 * *FROM* nos permite especificar desde qué imagen base de Docker Hub
@@ -184,6 +204,17 @@ del contenedor a un destino dentro del contenedor.
   EXPOSE 3000
   CMD [ "node", "index.js" ]
 ```
+
+Todos estas órdenes se ejecutan en nuestro contenedor cuando usemos el comando "build" de Docker.
+
+Analicemos el contenido del fichero Dockerfile:
+* **FROM node:8** le indica que se baje la imagen node, versión 8, de docker hub.
+* **WORKDIR /usr/src/app** le indica que haga un "cd" para trabajar en esa ruta, dentro del contenedor. Si no existiese antes del "cd" haría un "mkdir". Piensa que el contenedor tiene una estructura de un sistema operativo linux.
+* **COPY pagacke*.json ./** copia desde nuestro directorio donde se encuentre el Dockerfile los ficheros que cumplan la expresión al directorio que se encuentre el contenedor, que definimos con WORKDIR
+* **RUN npm install** ejecuta la instalación del package.json y package-lock.json que hemos copiado en /usr/src/app
+* **COPY . .** copia todos los archivos desde nuestro directorio donde se encuentra el Dockerfile, excepto los indicados en el fichero .dockerignore y los copia en el directorio actual de trabajo indicado por WORKDIR
+* **EXPOSE 3000** abre el puerto 3000 del contenedor
+* **CMD ["node", "index.js"]* es el comando que se queda lanzado en el contenedor.
 
 ## Fichero .dockerignore
 
@@ -258,14 +289,15 @@ Nos fijamos, al final, en el nombre aleatorio que le ha dado al contenedor de mo
 ```shell
   docker run -it --link=[NOMBRE_CONT]:mongo mongo /bin/bash
 ```
-Con esto entramos en la consola del contenedor que está corriendo el servidor de mongo.
-Ejecutamos:
+Con esto creamos un contenedor temporal que enlaza con la consola del contenedor que está corriendo el servidor de mongo y entramos en su consola. Lo veremos porque cambia el prompt.
+
+Ahora ejecutamos:
 
 ```shell
   env
 ```
 Que nos muestra todas las variables de entorno.
-Nos fijamos en la línea que nos muestra MONGO_PORT_27017_TCP_ADDR para obtener la ip del contenedor:
+Nos fijamos en la línea que nos muestra **MONGO_PORT_27017_TCP_ADDR** para obtener la ip del contenedor:
 
 ```shell
 [...]
@@ -279,7 +311,8 @@ MONGO_MAJOR=4.0
 
 Cerramos la consola con `exit`
 
-El comando para ejecutar mongo es `mongo` para lo que deberemos tener instalado el cliente de mongodb en nuestro equipo llamado `mongodb-clients`.
+El comando para ejecutar el cliente de mongodb es `mongo` para lo que deberemos tener instalado el cliente de mongodb en nuestro equipo llamado `mongodb-clients`
+
 Para saber si lo tenemos instalado podemos ejecutar:
 ```shell
 sudo dpkg --get-selections | grep mongo
