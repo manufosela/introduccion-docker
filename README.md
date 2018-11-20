@@ -64,6 +64,7 @@ Para bajar una de imágen de docker del [docker hub](https://hub.docker.com/):
   docker logs CONTENEDOR-ID
   docker exec -it CONTENEDOR /bin/bash
   docker start / stop / restart CONTENEDOR-ID
+  docker stop CONTENEDOR-ID
   docker rm CONTENEDOR-ID
   docker rmi IMAGEN
 ```
@@ -73,7 +74,8 @@ Para bajar una de imágen de docker del [docker hub](https://hub.docker.com/):
 * **inspect** se utiliza para obtener información a bajo nivel del contenedor
 * **logs** se utiliza para ver la salida generada por consola al ejecutar el contenedor
 * **exec** se utiliza para ejecutar comandos en un contenedor que está ejecutandose
-* **rm** se utiliza para borrar un contenedor que está ejecutandose
+* **stop** se utiliza para parar la ejecución de un contenedor que está ejecutandose
+* **rm** se utiliza para borrar un contenedor
 * **rmi** para borrar una imagen creada
 
 # Pasos para crear y lanzar un contenedor Docker
@@ -257,6 +259,7 @@ Modificamos index.js
 Tendremos que borrar el contenedor y volver a construirlo y volver a ejecutar el contenedor para que el servidor node-express lea los cambios.
 
 ```shell
+	docker stop [CONTENEDOR_ID]
 	docker rm [CONTENEDOR_ID]
 	docker build -t manufosela/api .
 	docker run -p 3000:3000 -d manufosela/api
