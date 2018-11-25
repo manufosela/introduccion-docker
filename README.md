@@ -66,6 +66,14 @@ Para bajar una de imágen de docker del [docker hub](https://hub.docker.com/):
   docker pull IMAGEN
 ```
 
+## Registros de imágenes públicos populares
+A parte de la oficial de docker tenemos mas repositorios de imágenes publicadas por proveedores, donde podemos encontrar una amplia librería de imágenes de las aplicaciones más populares.
+
+- El [Google Container Registry](https://cloud.google.com/container-registry/)
+- [Quay](https://quay.io/)
+- [Amazon Container Registry](https://aws.amazon.com/it/ecr/)
+
+
 ## Más comandos
 ```shell
   docker build -t NOMBRE_IMAGEN .
