@@ -30,12 +30,22 @@ sudo apt install docker docker-compose
 2. Añadimos al usuario de ubuntu al grupo docker
 ```shell
 sudo usermod -aG docker $USER
+sudo systemctl restart docker
 ```
 3. En https://hub.docker.com/ podemos buscar imagenes de docker ya preparadas
 4. Podemos comprobar qué imágenes tenemos con:
 ```shell
   docker images
 ```
+
+Si te diera el error: **"cannot connect to the docker daemon"** es porque hay que arrancar el servicio.
+Sigue los siguientes pasos para solucionarlo: 
+```shell
+systemctl is-active docker
+systemctl start docker
+systemctl enable docker
+```
+
 # Comandos Docker
 ## Básicos
 Listado de imágenes de docker instaladas:
@@ -56,6 +66,14 @@ Para bajar una de imágen de docker del [docker hub](https://hub.docker.com/):
   docker pull IMAGEN
 ```
 
+## Registros de imágenes públicos populares
+A parte de la oficial de docker tenemos mas repositorios de imágenes publicadas por proveedores, donde podemos encontrar una amplia librería de imágenes de las aplicaciones más populares.
+
+- El [Google Container Registry](https://cloud.google.com/container-registry/)
+- [Quay](https://quay.io/)
+- [Amazon Container Registry](https://aws.amazon.com/it/ecr/)
+
+
 ## Más comandos
 ```shell
   docker build -t NOMBRE_IMAGEN .
@@ -64,6 +82,7 @@ Para bajar una de imágen de docker del [docker hub](https://hub.docker.com/):
   docker logs CONTENEDOR-ID
   docker exec -it CONTENEDOR /bin/bash
   docker start / stop / restart CONTENEDOR-ID
+  docker stop CONTENEDOR-ID
   docker rm CONTENEDOR-ID
   docker rmi IMAGEN
 ```
@@ -73,7 +92,8 @@ Para bajar una de imágen de docker del [docker hub](https://hub.docker.com/):
 * **inspect** se utiliza para obtener información a bajo nivel del contenedor
 * **logs** se utiliza para ver la salida generada por consola al ejecutar el contenedor
 * **exec** se utiliza para ejecutar comandos en un contenedor que está ejecutandose
-* **rm** se utiliza para borrar un contenedor que está ejecutandose
+* **stop** se utiliza para parar la ejecución de un contenedor que está ejecutandose
+* **rm** se utiliza para borrar un contenedor
 * **rmi** para borrar una imagen creada
 
 # Pasos para crear y lanzar un contenedor Docker
@@ -257,6 +277,7 @@ Modificamos index.js
 Tendremos que borrar el contenedor y volver a construirlo y volver a ejecutar el contenedor para que el servidor node-express lea los cambios.
 
 ```shell
+	docker stop [CONTENEDOR_ID]
 	docker rm [CONTENEDOR_ID]
 	docker build -t manufosela/api .
 	docker run -p 3000:3000 -d manufosela/api
