@@ -368,6 +368,15 @@ Para interactuar con la base de datos podemos ejecutar algunos comandos de mongo
 
 Usamos CTRL+C para salir de la consola de mongo.
 
+## Entendiendo como se crea una imagen de docker
+
+![layered-file-system](https://raw.githubusercontent.com/manufosela/introduccion-docker/master/images/docker_images_example.png)
+
+Tanto en la **Image 1** como en la **Image 2** podemos ver que tienen en común en su Dockerfile la base de node:8, la copia de los ficheros package.json y package-lock.json y la instalación del package.json con **npm install**
+A la derecha de cada orden, vemos un "hash", que es el identificador de las imagenes temporales que va creando, conforme va ejecutando cada orden.
+Cuando ejecutamos **docker images -a** podemos ver todas las imagenes intermedias que se han creado.
+Cuando borramos la imagen "padre", todas las que dependen de esta se borraran tambien.
+
 ## 3. Conectar docker node-express con docker mongodb
 
 Para facilitar y conectar el contenedor de node-express con el contenedor de mongodb vamos a valernos de *docker-compose*
