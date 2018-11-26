@@ -45,6 +45,8 @@ systemctl is-active docker
 systemctl start docker
 systemctl enable docker
 ```
+Si necesitas mas información sobre cuestiones de docker en https://www.configserverfirewall.com/docker/ puedes encontrarla.
+Si no en la página oficial de docker https://www.docker.com/
 
 # Comandos Docker
 ## Básicos
