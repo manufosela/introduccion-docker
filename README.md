@@ -560,6 +560,10 @@ Creamos un archivo llamado **api.conf** con el siguiente contenido:
 Este fichero de configuración reemplazará al que trae por defecto nginx.
 Lo único que hemos hecho ha sido añadir el apartado "location /api/" para indicar que cuando se llame a http://localhost/api queremos que haga un "proxy_pass" a "localhost:3000", enmascarando las llamadas a nuestro API.
 
+```
+NOTA: Fijate que **app** en la configuración del proxy_pass de nginx en las dos primeras lineas hace referencia al nombre del servicio "app" que corre nuestro api rest por el puerto 3000. Docker hace de DNS resolviendo la IP del contenedor, evitando un error 502. Si cambiar el nombre del servicio, debes cambiarlo en la configuración de nginx.
+```
+
 ## Añadiendo nginx a la configuracion de docker-compose
 Ahora hay que modificar el fichero docker-compose para que tambien lance el contenedor de nginx:
 
