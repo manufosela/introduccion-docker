@@ -13,7 +13,7 @@ de aplicaciones dentro de contenedores de software, proporcionando
 una capa adicional de abstracción y automatización de virtualización de
 aplicaciones en múltiples sistemas operativos [Fuente Wikipedia](https://es.wikipedia.org/wiki/Docker_(software))
 
-Docker es un “emulador” de entornos aislado para poder ejecutar programas sin que afecte a mi sistema operativo (SO) y pudiendose llevar y replicar en otros SS.OO. o entornos.
+Docker es un "emulador" de entornos aislado para poder ejecutar programas sin que afecte a mi sistema operativo (SO) y pudiendose llevar y replicar en otros SS.OO. o entornos.
 Parecido a VirtualBox o VMWare, pero mucho más ligero y a nivel de sistema operativo. Básicamente no vas a tener más de un sistema operativo completo corriendo en tu máquina. ![virtualización vs contenedores](https://i.ytimg.com/vi/TvnZTi_gaNc/maxresdefault.jpg)
 Docker consta de imágenes y contenedores:
 1. Una **imagen** es la especificación inerte, inmmutable, una foto del estado y de unas piezas de software que incluyen desde la aplicación que queremos ejecutar hasta las librerias y todo lo necesario para que corra encima del sistema operativo en el cual se ejecuta.
@@ -69,7 +69,7 @@ Para bajar una de imágen de docker del [docker hub](https://hub.docker.com/):
 ```
 
 ## Registros de imágenes públicos populares
-A parte de la oficial de docker tenemos mas repositorios de imágenes publicadas por proveedores, donde podemos encontrar una amplia librería de imágenes de las aplicaciones más populares.
+A parte del repositorio oficial de docker tenemos más repositorios de imágenes publicadas por proveedores, donde podemos encontrar una amplia librería de imágenes de las aplicaciones más populares.
 
 - El [Google Container Registry](https://cloud.google.com/container-registry/)
 - [Quay](https://quay.io/)
@@ -168,13 +168,13 @@ Podemos comprobarlo:
 
 ## ¿Y si necesito crear un servidor express en node para exponer un api que se alimente de mongodb?
 Pues lo ideal es separar el servidor node-express del servidor de mongodb.
-De esta manera si necesito escalar o cambiar uno de los dos, el otro no tiene porqué verse afectado. Seguiremos los siguientes pasos:
+De esta manera si necesito escalar o cambiar uno de los dos, el otro no tiene por qué verse afectado. Seguiremos los siguientes pasos:
 
 1. Vamos a crear un contenedor con node-express
 2. Vamos a crear un contenedor con un servidor de mongodb
 3. Vamos a conectar los dos contenedores: node-express y mongodb
 
-Previamente creamos la carpeta de la aplicacion, iniciamos el proyecto node e instalando mongodb:
+Previamente creamos la carpeta de la aplicación, iniciamos el proyecto node e instalando mongodb:
 ```shell
   mkdir api (dentro de docker_example)
   cd api
@@ -395,24 +395,24 @@ En dicho fichero se indica qué contenedores se enlazan con quien, de manera
 que de una sola llamada podemos arrancar, parar y relacionar varios contenedores.
 
 ### Creamos el fichero docker-compose.yml
-```shell
-  version: "2"
-    services:
-      app:
-        container_name: app
-  	restart: always
-  	build: .
-      	ports:
-  	  - "3000:3000"
-  	links:
-  	  - mongo
-      mongo:
-  	container_name: mongo
-  	image: mongo
-  	volumes:
-  	  - ./data:/data/db
-  	ports:
-  	  - "27017:27017"
+```yml
+version: "2"
+services:
+  app:
+    container_name: app
+    restart: always
+    build: .
+    ports:
+    - "3000:3000"
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"
 ```
 
 # Docker-compose
@@ -565,45 +565,45 @@ Lo único que hemos hecho ha sido añadir el apartado "location /api/" para indi
 en las dos primeras lineas hace referencia al nombre del servicio "app"
 que corre nuestro api rest por el puerto 3000. Docker hace de DNS 
 resolviendo la IP del contenedor, evitando un error 502. 
-Si cambiar el nombre del servicio, debes cambiarlo en la configuración
+Si cambias el nombre del servicio, debes cambiarlo en la configuración
 de nginx.
 ```
 
 ## Añadiendo nginx a la configuracion de docker-compose
 Ahora hay que modificar el fichero docker-compose para que tambien lance el contenedor de nginx:
 
-```shell
-        version: "2"
-	services:
-	  app:
-	    container_name: app
-	    restart: always
-	    build: .
-	    ports:
-	      - "3000:3000"
-	    links:
-	      - mongo
-	  mongo:
-	    container_name: mongo
-	    image: mongo
-	    volumes:
-	      - ./data:/data/db
-	    ports:
-	      - "27017:27017"
-	  web:
-	    container_name: web
-	    image: nginx
-	    volumes:
-	      - ./config/api.conf:/etc/nginx/conf.d/default.conf
-	      - ../www:/usr/share/nginx/html
-	    ports:
-	      - "80:80"
-	    links:
-	      - app
+```yml
+version: "2"
+services:
+  app:
+    container_name: app
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"
+  web:
+    container_name: web
+    image: nginx
+    volumes:
+      - ./config/api.conf:/etc/nginx/conf.d/default.conf
+      - ../www:/usr/share/nginx/html
+    ports:
+      - "80:80"
+    links:
+      - app
 
 ```
 
-Como podemos apreciar por la sintaxis del bloque "web", usarmos la imagen de nginx, montamos el volumen api.conf dentro de la configuración por defecto de nginx y exponemos el puerto 80 con el del contenedor.
+Como podemos apreciar por la sintaxis del bloque "web", usamos la imagen de nginx, montamos el volumen api.conf dentro de la configuración por defecto de nginx y exponemos el puerto 80 con el del contenedor.
 Ahora vamos a probar.
 
 ## Probamos la nueva configuración: contenedor node-express, contenedor mongodb, contenedor nginx
