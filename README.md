@@ -37,6 +37,7 @@ sudo systemctl restart docker
 ```shell
   docker images
 ```
+Si te diera el error: **"Got permission denied while trying to connect to the Docker daemon socket..."** será necesario reiniciar el sistema operativo.
 
 Si te diera el error: **"cannot connect to the docker daemon"** es porque hay que arrancar el servicio.
 Sigue los siguientes pasos para solucionarlo: 
