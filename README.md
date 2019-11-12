@@ -218,6 +218,9 @@ del contenedor a un destino dentro del contenedor.
 * *CMD* establece el comando predeterminado para ejecutar nuestro contenedor.Nuestro Dockerfile para el api node-express
 
 ## Creamos el fichero Dockerfile con la configuración de nuestra imagen:
+
+Dentro de la carpeta docker_example creamos con un editor un fichero llamado **Dockerfile** y en el añadimos el siguiente contenido:
+
 ```shell
   FROM node:8
   WORKDIR /usr/src/app
