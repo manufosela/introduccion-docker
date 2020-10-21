@@ -630,3 +630,22 @@ Podemos entrar en http://localhost/api/misdatos y ver como sirve el json de la b
 Con **docker** podemos crear entornos de ejecución aislados y configurarlos a nuestro antojo sin romper nada y asegurando compatiblidad
 
 Con **docker-compose** podemos orquestar todos los contenedores creados, comunicarlos e iniciarlo y pararlos fácilmente.
+
+# Bonus Tricks
+
+Para ver los volumenes, contenedores e imagenes
+```shell
+docker system info
+```
+Para obtener el listado de volumenes
+```shell
+"docker volume ls
+```
+Para obtener la lista de contenedores arrancados y parados
+```shell
+docker container ls -a
+```
+Para borrar contenedores parados
+```shell
+docker container prune
+```
