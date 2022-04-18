@@ -257,7 +257,7 @@ Creamos el fichero '.dockerignore' para evitar copiar a la imagen los ficheros q
 
 Construimos la imagen según le indica Dockerfile:
 ```shell
-  docker build -t manufosela/api .
+  docker build -t manufosela:api .
   docker images
 ```
 Lanzamos el contenedor:
@@ -285,7 +285,7 @@ Tendremos que borrar el contenedor y volver a construirlo y volver a ejecutar el
 ```shell
 	docker stop [CONTENEDOR_ID]
 	docker rm [CONTENEDOR_ID]
-	docker build -t manufosela/api .
+	docker build -t manufosela:api .
 	docker run -p 3000:3000 -d manufosela/api
 ```
 
