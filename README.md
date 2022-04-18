@@ -262,7 +262,7 @@ Construimos la imagen según le indica Dockerfile:
 ```
 Lanzamos el contenedor:
 ```shell
-  docker run -p 3000:3000 -d manufosela/api
+  docker run -p 3000:3000 -d manufosela:api
   docker ps
 ```
 
@@ -276,7 +276,7 @@ Esto es lo que querremos hacer cuando subamos a producción nuestra aplicación,
 Como hemos visto antes con el parámetro -v podemos referenciar volumenes de tu equipo dentro del contenedor.
 
 ```shell
-  docker run -p 3000:3000 -d -v $(pwd)/index.js:/usr/src/app/index.js manufosela/api
+  docker run -p 3000:3000 -d -v $(pwd)/index.js:/usr/src/app/index.js manufosela:api
 ```
 
 Modificamos index.js
@@ -286,7 +286,7 @@ Tendremos que borrar el contenedor y volver a construirlo y volver a ejecutar el
 	docker stop [CONTENEDOR_ID]
 	docker rm [CONTENEDOR_ID]
 	docker build -t manufosela:api .
-	docker run -p 3000:3000 -d manufosela/api
+	docker run -p 3000:3000 -d manufosela:api
 ```
 
 Ahora sí se ven reflejados los cambios en http://localhost:3000
