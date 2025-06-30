@@ -1,4 +1,4 @@
-# Introduccion a Docker
+# Introduccion a Docker (UPDATED 30JUN2025)
 Tutorial de introducción a docker y docker-compose creando una aplicación fullstack, con un contenedor node-express para el api, otro con mongodb y otro con nginx para servir los ficheros estáticos.
 
 [NOTAS] 
