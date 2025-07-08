@@ -162,7 +162,7 @@ Podemos comprobarlo:
 * Comprobamos http://localhost en un navegador
 
 # Ejercicios
-1. Clonar un componente Polymer y hacer que se muestre la demo en un contenedor de nginx
+1. Clonar un componente Lit/React/Vue y hacer que se muestre la demo en un contenedor de nginx
 2. Arrancar tres contenedores de nginx en los puertos 80, 8080 y 8081
 
 # Haciendo más cosas con Docker
